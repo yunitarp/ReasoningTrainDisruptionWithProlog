@@ -1,3 +1,4 @@
+:- discontiguous prob/3.
 prob([X|Xs],Cond,P) :- !,
 	prob(X, Cond, Px),
 	prob(Xs, [X|Cond], PRest),
@@ -15,20 +16,21 @@ prob(\+ X, Cond, P) :- !,
 	P is 1-P0.
 
 %Use Bayes rule if condition involves a descendant of X
-prob(X, Cond0, P):-
+prob(X, Cond0, P):- prob(X, Cond0, P, _Py),!.
+prob(X, Cond0, P, Py):-
 	delete(Y, Cond0, Cond),
 	predecessor(X,Y),!,				%Y is a descendant of X
 	prob(X, Cond, Px),
 	prob(Y, [X|Cond], PyGivenX),
-	prob(Y, Cond, Py),
+	prob(Y, Cond, Py), Py \=0,
 	P is Px * PyGivenX / Py.		%Assuming Py > 0
 
 %Cases when condition does not involves a descendant
 
-prob(X, Cond, P) :-
+prob(X, _Cond, P) :-
 	p(X, P),!.						% X a root cause - its probability given
 
-prob(X, Cond, P) :-
+prob(X, Cond, P) :- !,
 	findall((CONDi, Pi), p(X,CONDi,Pi), CPlist),		%Condition on parents
 	sum_probs(CPlist, Cond, P).
 
@@ -84,29 +86,28 @@ path_probability(A, B, Path, Prob) :-
 										path(A, B, Path), prob(B, [A], P),
 										Prob is P.
 
-causing(A, B, Path, Cause) :- show_path(A, B, Path), subset(Cause, Path).
+causing(A, B, Path, Cause) :- show_path(A, B, Path), subset([Cause], Path).
 
 match(L1,L2) :- member(X,L1),member(X,L2).
-avoid(L1,L2) : not(match(L1,L2)).
+avoid(L1,L2) :- not(match(L1,L2)).
 
-path_avoid(A,B,Path,Avoid) :- show_path(A, B, Path), not(match(Avoid, Path)).
+notCausing(A,B,Path,Avoid) :- show_path(A, B, Path), avoid([Avoid], Path).
 
-notCausingDisruption(Disruption, X) :- node(X), not(path(X, Disruption, Path)).
+notCausingDisruption(Disruption, X) :- node(X), not(path(X, Disruption, _Path)).
 
-indirectCaused(X,Y) :- parent(Z,X).
+indirectCaused(X,_Y) :- parent(_Z,X).
 indirectCaused(X,Y) :- parent(X,Z), indirectCaused(Z, Y).
 
 directCaused(X,Y) :- parent(Y,X).
 
-numberOfChildren(Disruption, N) :-
+numberOfChildren(Disruption, N, L) :-
 	findall(Y, parent(Disruption, Y),L),
 	length(L,N).
-
-numberOfParent(Disruption, N) :-
+numberOfParent(Disruption, N, L) :-
 	findall(Y, parent(Y, Disruption),L),
 	length(L,N).
 
-haveAtLeastThreeParents(Disruption, N) :-
+haveAtLeastThreeParents(Disruption, _N) :-
 	parent(X,Disruption), parent(Y, Disruption), parent(Z, Disruption),
 	(X \= Y), (Y \= Z), (Z \= X).
 
@@ -115,7 +116,7 @@ haveAtLeastTwoParents(Disruption) :-
 	(X \= Y).
 
 independentNodes(Node) :-
-	node(Node), \+ parent(Node,Y), \+ parent(Y, Node).
+	node(Node), \+ parent(Node,_), \+ parent(_, Node).
 
 safetyCriticalness(X) :- node(X), safety(X).
 missionCriticalness(X) :- node(X), mission(X).
@@ -126,3 +127,48 @@ disruptionLevelTwo(X) :- ((safetyCriticalness(X), missionCriticalness(X)); (safe
 						 (missionCriticalness(X), needImmediateAction(X))), not(disruptionLevelOne(X)).
 disruptionLevelThree(X) :- (safetyCriticalness(X); missionCriticalness(X); needImmediateAction(X)), not(disruptionLevelOne(X)),
 						 not(disruptionLevelTwo(X)).
+
+
+descendant(X,Y) :- parent(X,Y).
+descendant(X,Y) :- parent(X,Z), descendant(Z,Y), asserta(visited(X)).
+descendants([Node, Descendant, Length]) :- node(Node), findall(A, descendant(Node,A), L), sort(L, Descendant), length(Descendant, Length).
+all_descendant(Result) :-
+	findall([Node,Descendant, Length], descendants([Node,Descendant, Length]), Result).
+
+compare_descending('<', [_,_, X], [_, _, Y]) :- X > Y, !.
+compare_descending('>', _, _N).
+
+sort_descendant_descending(Sorted) :-
+	all_descendant(Result),
+    predsort(compare_descending, Result, Sorted).
+max_descendant(L) :- sort_descendant_descending(Result), nth0(0, Result, L).
+detail_max_descendant([Node, Descendant, Length]) :- max_descendant(L), nth0(0, L, Node), nth0(1, L, Descendant), nth0(2, L, Length).
+
+ancestor(X,Y) :- parent(X,Y).
+ancestor(X,Y) :- parent(X,Z), ancestor(Z,Y).
+ancestors([Node, Ancestor, Length]) :- node(Node), findall(A, descendant(A, Node), L), sort(L, Ancestor), length(Ancestor, Length).
+
+all_ancestor(Result) :-
+	findall([Node,Ancestor, Length], ancestors([Node,Ancestor, Length]), Result).
+sort_ancestor_descending(Sorted) :-
+	all_ancestor(Result),
+    predsort(compare_descending, Result, Sorted).
+max_ancestor(L) :- sort_ancestor_descending(Result), nth0(0, Result, L).
+
+detail_max_ancestor([Node, Ancestor, Length]) :- max_ancestor(L), nth0(0, L, Node), nth0(1, L, Ancestor), nth0(2, L, Length).
+
+/*Additional predicates: 
+common triggered disruption: com_triged_dis/3.
+The predicate com_triged_dis(D1,D2,D3) is true if the disruption D3 is triggered by disruption D1 and D2.
+In other words, D3 is the descendant of both D1 and D2.
+*/
+com_triged_dis(X,Y,Z):- ancestor(X,Z), ancestor(Y,Z).
+show_com_triged_dis(X, Y, Com_Triged_Dis) :- findall(Z, com_triged_dis(X,Y,Z), L), sort(L, Com_Triged_Dis).
+
+/* Additional predicates:
+common triggering disruption: com_triging_dis/3.
+The predicate com_triging_dis(D1,D2,D3) is true if the disruption D1 and D2 are triggered by disruption D3.
+In other words, D3 is the ancestor of both D1 and D2.
+*/
+com_triging_dis(X,Y,Z):- ancestor(Z,X), ancestor(Z,Y), X \= Y.
+show_com_triging_dis(Z, Com_Triging_Dis) :- findall([X,Y], com_triging_dis(X,Y,Z), L), sort(L, Com_Triging_Dis).

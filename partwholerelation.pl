@@ -10,11 +10,11 @@ edge(overhead_line, static_inverter).
 edge(static_inverter, ac).
 edge(compressor, door).
 edge(compressor, horn).
-edge(compressor, break).
+edge(compressor, brake).
 edge(ac, series).
 edge(door, series).
 edge(horn, series).
-edge(break, series).
+edge(brake, series).
 edge(traction, series).
 edge(wiper, series).
 edge(speedometer, series).
