@@ -13,18 +13,26 @@ Here we provide steps by steps how to run this program :
 5. type "menu." on the Prolog interpreter.
 6. The all of menu will appear and just choose the menu number for query you want to see.
 7. Here list of name disruptions :
-	- server_and_application	- static_inverter
-	- railway					- door
-	- suspension				- horn
-	- emergency					- brake
-	- mg						- switch
-	- service_table				- overhead_line
-	- signal					- pantograph
-	- fallen_tree				- series
+	- server_and_application
+	- static_inverter
+	- railway
+	- door
+	- suspension
+	- horn
+	- emergency
+	- brake
+	- mg
+	- switch
+	- service_table	
+	- overhead_line
+	- signal
+	- pantograph
+	- fallen_tree
+	- series
 	- fire
 	- compressor
 	- traction
 	- wiper
 	- speedometer
-	please type the name of disruptions correctly.
+Please type the name of disruptions correctly.
 
