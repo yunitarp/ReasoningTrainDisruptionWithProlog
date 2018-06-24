@@ -10,7 +10,7 @@ Here we provide steps by steps how to run this program :
 	consult('rules.pl').
 	consult('partholerelation.pl').
 	consult('bayesian_network1.pl') %for example we want try to reason the bayesian network 1.
-5. type "menu." on the Prolog interpeter.
+5. type "menu." on the Prolog interpreter.
 6. The all of menu will appear and just choose the menu number for query you want to see.
 7. Here list of name disruptions :
 	- server_and_application	- static_inverter
