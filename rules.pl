@@ -1,4 +1,8 @@
 :- discontiguous prob/3.
+
+%Calculate the probability of certain disruption given other disruptions.
+%P is the probability of event X given its conditional probability
+
 prob([X|Xs],Cond,P) :- !,
 	prob(X, Cond, Px),
 	prob(Xs, [X|Cond], PRest),
@@ -128,9 +132,18 @@ disruptionLevelTwo(X) :- ((safetyCriticalness(X), missionCriticalness(X)); (safe
 disruptionLevelThree(X) :- (safetyCriticalness(X); missionCriticalness(X); needImmediateAction(X)), not(disruptionLevelOne(X)),
 						 not(disruptionLevelTwo(X)).
 
+/*Find the most triggering disruptions.
+Y is descendant of X: descendant/2.
+The predicate descendant/2 is true if disruption X is parent of Y or if there is a path from disruption X to disruption Y.
 
+Node is the name of disruption, Descendant is name of disruption descendaants, and Length is the number of disruption descenants.
+descendants([Node, Descendant, Length]) is predicate to collect each disruption, its descendant, and number of descendant in a list.
+
+
+The predicate all_descendant/1 will give a Result list that collect all of disruptions with their descendants and number of descendant.
+*/
 descendant(X,Y) :- parent(X,Y).
-descendant(X,Y) :- parent(X,Z), descendant(Z,Y), asserta(visited(X)).
+descendant(X,Y) :- parent(X,Z), descendant(Z,Y).
 descendants([Node, Descendant, Length]) :- node(Node), findall(A, descendant(Node,A), L), sort(L, Descendant), length(Descendant, Length).
 all_descendant(Result) :-
 	findall([Node,Descendant, Length], descendants([Node,Descendant, Length]), Result).
