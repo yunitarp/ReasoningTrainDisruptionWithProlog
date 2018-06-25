@@ -18,7 +18,7 @@ show_descendant([[Node, Descendant, Length]|Tail]) :-
 show_ancestor([]).
 show_ancestor([[Node, Ancestor, Length]|Tail]) :-
 	write('Disruption: '), write(Node), nl,
-	write('Trigggered by Disruptions: '), write(Ancestor),nl,
+	write('Triggered by Disruptions: '), write(Ancestor),nl,
 	write('Total: '), write(Length), nl,
 	show_descendant(Tail).
 
@@ -53,7 +53,7 @@ most_triggered :-
 com_trigged :-
 	write('Disruption 1 : '), read(D1),
 	write('Disruption 2 : '), read(D2),
-	write('Common Trigged Disruption by '), write(D1), write(' and '), write(D2), write(' :'), nl,
+	write('Common Triggered Disruption by '), write(D1), write(' and '), write(D2), write(' :'), nl,
 	show_com_triged_dis(D1,D2,Z), write(Z).
 
 com_triggering :-

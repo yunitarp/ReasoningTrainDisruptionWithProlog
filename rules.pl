@@ -123,28 +123,40 @@ path(A, B, [A | Rest]) 	:-
 							path(X, B, Rest).
 
 /*
+	path_probability(A, B, Path, Prob) ==> find path(Path) disruption from A disruption to B disruption with its probability (Prob)
 */
 path_probability(A, B, Path, Prob) :- 
 										path(A, B, Path), prob(B, [A], P),
 										Prob is P.
 
+/*
+	causing(A, B, Path, Cause) ==> find path(Path) disruption from A disruption to B disruption that contains Cause disruptions.
+*/
 causing(A, B, Path, Cause) :- show_path(A, B, Path), subset([Cause], Path).
 
+/*
+	match(L1,L2) ==> make sure every member of L1 is contains in L2.
+	avoid(L1,L2) ==> make sure every member of L1  is not contains in L2.
+	notCausing(A,B,Path,Avoid) ==> find path (Path) from A disruption to B disruption that does not contain Avoid disruptions.
+*/
 match(L1,L2) :- member(X,L1),member(X,L2).
 avoid(L1,L2) :- not(match(L1,L2)).
 
 notCausing(A,B,Path,Avoid) :- show_path(A, B, Path), avoid([Avoid], Path).
 
-notCausingDisruption(Disruption, X) :- node(X), not(path(X, Disruption, _Path)).
+/*notCausingDisruption(Disruption, X) :- node(X), not(path(X, Disruption, _Path)).
 
 indirectCaused(X,_Y) :- parent(_Z,X).
 indirectCaused(X,Y) :- parent(X,Z), indirectCaused(Z, Y).
 
 directCaused(X,Y) :- parent(Y,X).
+*/
+
 
 numberOfChildren(Disruption, N, L) :-
 	findall(Y, parent(Disruption, Y),L),
 	length(L,N).
+	
 numberOfParent(Disruption, N, L) :-
 	findall(Y, parent(Y, Disruption),L),
 	length(L,N).
@@ -164,11 +176,14 @@ safetyCriticalness(X) :- node(X), safety(X).
 missionCriticalness(X) :- node(X), mission(X).
 needImmediateAction(X) :- node(X), immediate(X).
 
-disruptionLevelOne(X) :- safetyCriticalness(X), missionCriticalness(X), needImmediateAction(X).
-disruptionLevelTwo(X) :- ((safetyCriticalness(X), missionCriticalness(X)); (safetyCriticalness(X), needImmediateAction(X));
+/*
+	disruptionLevelOne(X) :- safetyCriticalness(X), missionCriticalness(X), needImmediateAction(X).
+	disruptionLevelTwo(X) :- ((safetyCriticalness(X), missionCriticalness(X)); (safetyCriticalness(X), needImmediateAction(X));
 						 (missionCriticalness(X), needImmediateAction(X))), not(disruptionLevelOne(X)).
-disruptionLevelThree(X) :- (safetyCriticalness(X); missionCriticalness(X); needImmediateAction(X)), not(disruptionLevelOne(X)),
+	disruptionLevelThree(X) :- (safetyCriticalness(X); missionCriticalness(X); needImmediateAction(X)), not(disruptionLevelOne(X)),
 						 not(disruptionLevelTwo(X)).
+*/
+
 
 /*Find the most triggering disruptions.
 Y is descendant of X: descendant/2.
@@ -180,6 +195,7 @@ descendants([Node, Descendant, Length]) is predicate to collect each disruption,
 
 The predicate all_descendant/1 will give a Result list that collect all of disruptions with their descendants and number of descendant.
 */
+
 descendant(X,Y) :- parent(X,Y).
 descendant(X,Y) :- parent(X,Z), descendant(Z,Y).
 descendants([Node, Descendant, Length]) :- node(Node), findall(A, descendant(Node,A), L), sort(L, Descendant), length(Descendant, Length).
