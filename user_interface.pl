@@ -27,8 +27,8 @@ probability:-
 	write('Conditional: '),read(Ans2),
 	(	% If no conditional
 		(Ans2 = 'no', write('Probability: '), ((prob(Ans,[],P), write(P)); write(0)), nl,
-		numberOfChildren(Ans,N1, L1), write('Number of Children: '), write(N1), nl, write(L1),nl,
-		numberOfParent(Ans,N2, L2), write('Number of Parents: '), write(N2), nl, write(L2));
+		numberOfChildren(Ans,N1, L1), write('Number of Children( The disruption that triggered '), write(Ans), write(' disruption'), write(N1), nl, write(L1),nl,
+		numberOfParent(Ans,N2, L2), write('Number of Parents (The disruption that triggering '), write(Ans), write(' disruption'), write(N2), nl, write(L2));
 		% If there exists a conditional
 		(Ans2 \= 'no', findall([P1,P2],path_probability(Ans2,Ans,P1,P2),L),
 		(L = [] -> (write('Path: []'), nl, write('Probability: '), findall(Prob, prob(Ans, [Ans2], Prob), P), write(P), nl); show_prob(L)))
@@ -57,9 +57,10 @@ com_trigged :-
 	show_com_triged_dis(D1,D2,Z), write(Z).
 
 com_triggering :-
-	write('Disruption : '), read(D3),
-	write('Common Triggring Disruption by '), write(D3), write(' :'), nl,
-	show_com_triging_dis(D3,L), write(L).
+	write('Disruption 1: '), read(D3),
+	write('Disruption 2 :'), read(D4),
+	write('Common Triggering Disruption by '), write(D3), write(' and '), write(D4), write(' :'), nl,
+	show_com_triging_dis(D3,D4, L), write(L).
 
 not_lead_other :-
 	write('Disruption that not lead any other disruptions : '), nl,
@@ -74,7 +75,7 @@ menu:-
 	write('5. Trace Disruption'),nl,
 	write('6. The most-triggering disruptions'),nl,
 	write('7. The most-triggered disruptions'),nl,
-	write('8. Common Triggged Disruption'),nl,
+	write('8. Common Trigged Disruption'),nl,
 	write('9. Common Triggering Disruption'),nl,
 	write('10. Not lead to any other disruptions'), nl,
 	write('11. Exit'), nl,

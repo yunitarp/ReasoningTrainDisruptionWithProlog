@@ -184,4 +184,4 @@ The predicate com_triging_dis(D1,D2,D3) is true if the disruption D1 and D2 are 
 In other words, D3 is the ancestor of both D1 and D2.
 */
 com_triging_dis(X,Y,Z):- ancestor(Z,X), ancestor(Z,Y), X \= Y.
-show_com_triging_dis(Z, Com_Triging_Dis) :- findall([X,Y], com_triging_dis(X,Y,Z), L), sort(L, Com_Triging_Dis).
+show_com_triging_dis(X, Y, Com_Triging_Dis) :- findall([Z], com_triging_dis(X,Y,Z), L), sort(L, Com_Triging_Dis).
