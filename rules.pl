@@ -1,25 +1,46 @@
 :- discontiguous prob/3.
+%==============================================================================================%
+/*	Rules to reason about Probability in Prolog
+	===========================================
+*/
 
-%Calculate the probability of certain disruption given other disruptions.
-%P is the probability of event X given its conditional probability
-
+/*
+	Prolog rules to calculate Rules 1 (Probability of conjunction)
+	prob([X|Xs],Cond,P) ==>  rules to calculate the conjunction probability (P) of disruption X given Cond disruption.
+*/
 prob([X|Xs],Cond,P) :- !,
 	prob(X, Cond, Px),
 	prob(Xs, [X|Cond], PRest),
 	P is Px * PRest.
 
+/*
+	Prolog rules to calculate Rules 2 (Probability of certain disruption is happened.
+	prob(X, Cond, 1) ==> rules to calculate probability (P) of a disruption given the disruption itself is = 1.
+*/
 prob([],_,1):- !.
 prob(X, Cond, 1) :-
-	member(X, Cond),!.
+	member(X, Cond),!. %checking, is the conditional event is the disruption itself?
 
+/*
+	Prolog rules to calculate Rules 3 (Probability of impossible event)
+	prob(X, Cond, 0) ==> rules to calculate the probability (P) of a disruption given the negation of disruption itself is = 0.
+*/
 prob(X, Cond, 0) :-
-	member(\+ X, Cond), !.
+	member(\+ X, Cond), !. %checking, is the the conditional event is the negation of disruption itself?
 
+/*
+	Prolog rules to calculate Rules 4 (Probability of negation)
+	prob(\+ X, Cond, P) ==> rules to calculate the probability (P) of negation of disruption X given other disruption (Cond) is
+	= 1- Probability of disruption X (P0) given othen disruption (Cond)
+*/
 prob(\+ X, Cond, P) :- !,
 	prob(X, Cond, P0),
 	P is 1-P0.
+/*	
+	Prolog rules to calculate Rules 5 (Probability of disruption if condition (Cond0) involves a descendant of disruption X)
+	Use Bayes rule if condition involves a descendant of disruption X
 
-%Use Bayes rule if condition involves a descendant of X
+*/
 prob(X, Cond0, P):- prob(X, Cond0, P, _Py),!.
 prob(X, Cond0, P, Py):-
 	delete(Y, Cond0, Cond),
@@ -27,8 +48,11 @@ prob(X, Cond0, P, Py):-
 	prob(X, Cond, Px),
 	prob(Y, [X|Cond], PyGivenX),
 	prob(Y, Cond, Py), Py \=0,
-	P is Px * PyGivenX / Py.		%Assuming Py > 0
+	P is Px * PyGivenX / Py.
 
+/*
+
+*/
 %Cases when condition does not involves a descendant
 
 prob(X, _Cond, P) :-
@@ -62,30 +86,44 @@ member(X, [_|L]) :-
 delete(X, [X|L], L).
 delete(X, [Y|L], [Y|L2]) :-
 	delete(X, L, L2).
+%==============================================================================================%
 
+/*
 route(X,Y) :- retractall(visited(_)), route_(X,Y).
 route_(X,Y) :- edge(X,Y).
 route_(X,Y) :- edge(X,Z), \+ visited(Z), asserta(visited(Z)), route_(Z,Y).
+*/
 
-
+/* Find path in the cyclic graph from A disruption to B disruption and it only visiting cycle path once
+	show_path(A,B,P) ==> true if there is a path P from disruption A to disruption P in cyclic graph.
+*/
 show_path(A,A,T,P) :- reverse([A|T],P).
 show_path(A,Z,T,P) :- edge(A,B), not(member(A,T)), show_path(B,Z,[A|T],P).
 show_path(A,B,P) :- show_path(A,B,[],P).
 
 
 
-%cause(A,B, Path, prob(B, [A], P)) :- show_path(A,B, Path), prob(B, [A], P).
-
+/*
 tracing_cause(A, B, cause(A,B)) 	:- parent(A,B).
 tracing_cause(A,B, cause(A,Z,G)) 	:- 
 										parent(A, Z),
 										tracing_cause(Z, B, G).
+*/
 
+/*
+	adjacent(A, B ,[A,B]) ===> is true if there is an edge from A disruption to B disruption, or in other word A disruption
+							   is parent of B disruption in the DAG.
+	path(A, B, [A,B])  ===> is true if there is a path from A disruption to B disruption (base case).
+	path(A, B, [A | Rest]) ==> is true if there is a path from A disruption to B disruption (recursive case).
+*/
 adjacent(A, B ,[A,B]) 	:- parent(A, B).
 path(A, B, [A,B]) 		:- adjacent(A,B, [A,B]).
 path(A, B, [A | Rest]) 	:- 
 							adjacent(A, X, [A,X]),
 							path(X, B, Rest).
+
+/*
+*/
 path_probability(A, B, Path, Prob) :- 
 										path(A, B, Path), prob(B, [A], P),
 										Prob is P.
