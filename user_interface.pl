@@ -27,8 +27,8 @@ probability:-
 	write('Conditional: '),read(Ans2),
 	(	% If no conditional
 		(Ans2 = 'no', write('Probability: '), ((prob(Ans,[],P), write(P)); write(0)), nl,
-		numberOfChildren(Ans,N1, L1), write('Number of Children( The disruption that triggered '), write(Ans), write(' disruption'), write(N1), nl, write(L1),nl,
-		numberOfParent(Ans,N2, L2), write('Number of Parents (The disruption that triggering '), write(Ans), write(' disruption'), write(N2), nl, write(L2));
+		numberOfChildren(Ans,N1, L1), write('Number of Children( The disruption that triggered) '), write(Ans), write(' disruption'), write(N1), nl, write(L1),nl,
+		numberOfParent(Ans,N2, L2), write('Number of Parents (The disruption that triggering) '), write(Ans), write(' disruption'), write(N2), nl, write(L2));
 		% If there exists a conditional
 		(Ans2 \= 'no', findall([P1,P2],path_probability(Ans2,Ans,P1,P2),L),
 		(L = [] -> (write('Path: []'), nl, write('Probability: '), findall(Prob, prob(Ans, [Ans2], Prob), P), write(P), nl); show_prob(L)))
