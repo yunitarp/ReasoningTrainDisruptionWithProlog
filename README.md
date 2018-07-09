@@ -1,38 +1,39 @@
 # ReasoningTrainDisruptionWithProlog
-We try to reason about disruption pattern for train systems using Bayesian Network and Prolog.
-we suggest to run this program using SWI-Prolog version 7.6.1 for better performance.
+We reason about disruption pattern for train systems using Bayesian Network and Prolog.
+We suggest to run this program using SWI-Prolog version 7.6.1 for better performance.
 
 Here we provide steps by steps how to run this program :
-1. Please download all the files in this repository.
+1. Please going to the Prolog Program directory. Then, download all the files in this repository.
 2. Extract the .zip file.
 3. Go to the directory where the files is extracted, double click/run the "user_interface.pl" files.
-4. Consult the "rules.pl", "partwholerelation.pl", and "bayesian_networkN" that you want try to reason using the following command :
+4. Consult the "rules.pl", "partwholerelation.pl", and "bayesian_networkN" that you want to reason using the following command :
 	consult('rules.pl').
 	consult('partholerelation.pl').
-	consult('bayesian_network1.pl') %for example we want try to reason the bayesian network 1.
+	consult('bayesian_network1.pl') %for example if we want to reason the bayesian network 1.
 5. type "menu." on the Prolog interpreter.
-6. The all of menu will appear and just choose the menu number for query you want to see.
-7. Here list of name disruptions :
-	- server_and_application
-	- static_inverter
-	- railway
-	- door
-	- suspension
-	- horn
-	- emergency
+6. The main menu will appear and just choose the menu number for query you want to answer.
+7. Here the list of disruptions' names :
+	- ac
 	- brake
-	- mg
-	- switch
-	- service_table	
-	- overhead_line
-	- signal
-	- pantograph
-	- fallen_tree
-	- series
-	- fire
 	- compressor
+	- door
+	- emergency
+	- fallen_tree
+	- fire
+	- horn
+	- mg
+	- overhead_line
+	- pantograph	
+	- railway
+	- series
+	- service_table
+	- server_and_application
+	- signal
+	- speedometer
+	- static_inverter
+	- suspension
+	- switch
 	- traction
 	- wiper
-	- speedometer
 # Please type the name of disruptions correctly.
 
