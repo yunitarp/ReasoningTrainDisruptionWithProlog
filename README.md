@@ -6,7 +6,7 @@ Here we provide steps by steps how to run this program :
 1. Please going to the Prolog Program directory. Then, download all the files in this repository.
 2. Extract the .zip file.
 3. Go to the directory where the files is extracted, double click/run the "user_interface.pl" files.
-4. Consult the "rules.pl", "partwholerelation.pl", and "bayesian_networkN" that you want to reason using the following command :
+4. Consult the "rules.pl", "partwholerelation.pl", and "bayesian_networkN" using the following command :
 	consult('rules.pl').
 	consult('partholerelation.pl').
 	consult('bayesian_network1.pl') *for example if we want to reason the bayesian network 1*.
