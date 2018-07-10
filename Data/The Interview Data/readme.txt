@@ -1,0 +1,1 @@
+The interview question and result is written in Bahasa.

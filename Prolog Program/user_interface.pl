@@ -11,14 +11,14 @@ show_path([H|Tail]):-
 show_descendant([]).
 show_descendant([[Node, Descendant, Length]|Tail]) :-
 	write('Disruption: '), write(Node), nl,
-	write('Trigger Disruptions: '), write(Descendant),nl,
+	write('Leads to: '), write(Descendant),nl,
 	write('Total: '), write(Length), nl,
 	show_descendant(Tail).
 
 show_ancestor([]).
 show_ancestor([[Node, Ancestor, Length]|Tail]) :-
 	write('Disruption: '), write(Node), nl,
-	write('Triggered by Disruptions: '), write(Ancestor),nl,
+	write('Caused by: '), write(Ancestor),nl,
 	write('Total: '), write(Length), nl,
 	show_descendant(Tail).
 
@@ -63,7 +63,7 @@ com_triggering :-
 	show_com_triging_dis(D3,D4, L), write(L).
 
 not_lead_other :-
-	write('Disruption that not lead any other disruptions : '), nl,
+	write('Disruption that do not lead to any other disruptions : '), nl,
 	findall(Node, independentNodes(Node), L), write(L).
 
 menu:-
@@ -75,9 +75,9 @@ menu:-
 	write('5. Trace Disruption'),nl,
 	write('6. The most-triggering disruptions'),nl,
 	write('7. The most-triggered disruptions'),nl,
-	write('8. Common Trigged Disruption'),nl,
+	write('8. Common Triggered Disruption'),nl,
 	write('9. Common Triggering Disruption'),nl,
-	write('10. Not lead to any other disruptions'), nl,
+	write('10. Disruptions that do not lead to other disruptions'), nl,
 	write('11. Exit'), nl,
 	write('Choice: '),read(Ans),
 	(
